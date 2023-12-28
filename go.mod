@@ -1,6 +1,6 @@
-module http-benchmark
+module github.com/cahyacaa/http-benchmark
 
-go 1.20
+go 1.21.4
 
 require (
 	github.com/montanaflynn/stats v0.7.1

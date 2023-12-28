@@ -108,7 +108,7 @@ func sendRequest(httpVersion int) RequestResult {
 	//testURL := "http://localhost:4000/test-5mb"
 	//testURL := "http://localhost:8000/test-5mb"
 	//testURL := "http://localhost:4000/test"
-
+	fmt.Println(testURL)
 	req, err := http.NewRequest("GET", testURL, nil)
 
 	if err != nil {
