@@ -168,6 +168,7 @@ func benchmark(numRequests int, httpVersion int) {
 			}
 
 			if res.Status != "200" {
+				fmt.Println(res.Status)
 				mutex.Lock()
 				failed++
 				mutex.Unlock()
