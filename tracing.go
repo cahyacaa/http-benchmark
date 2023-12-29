@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/tls"
+	"fmt"
 	"log"
 	"net/http/httptrace"
 	"time"
@@ -59,14 +60,17 @@ func getHttpTrace() *httptrace.ClientTrace {
 		},
 		TLSHandshakeStart: func() {
 			tlsHandShakeStart = time.Now()
+			fmt.Println(tlsHandShakeStart)
+
 			l = append(l, int64(1))
 		},
 		TLSHandshakeDone: func(state tls.ConnectionState, err error) {
+			fmt.Println(state)
 			if err != nil {
 				log.Println("tls error", err)
 
 			} else {
-				tlsHandShakeEnd = time.Now()
+				fmt.Println(time.Since(tlsHandShakeStart))
 				avgTlsHandShake = append(avgTlsHandShake, tlsHandShakeEnd.Sub(tlsHandShakeStart).Microseconds())
 			}
 

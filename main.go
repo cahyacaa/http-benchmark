@@ -86,8 +86,8 @@ func sendRequest(httpVersion int) RequestResult {
 		client = http1Client
 		testURL = "https://korlantas-approver-tlmp6dxpfq-et.a.run.app/test-5mb"
 	} else if httpVersion == 2 {
-		client = http2Client
-		testURL = "https://http2---korlantas-approver-tlmp6dxpfq-et.a.run.app/test-5mb"
+		client = http1Client
+		testURL = "https://http2---korlantas-approver-tlmp6dxpfq-et.a.run.app/test"
 	} else {
 		client = http2ClientV2
 	}
@@ -108,7 +108,6 @@ func sendRequest(httpVersion int) RequestResult {
 	//testURL := "http://localhost:4000/test-5mb"
 	//testURL := "http://localhost:8000/test-5mb"
 	//testURL := "http://localhost:4000/test"
-	fmt.Println(testURL)
 	req, err := http.NewRequest("GET", testURL, nil)
 
 	if err != nil {
@@ -231,3 +230,38 @@ func main() {
 	opts := parseOptions()
 	benchmark(opts.NumRequests, opts.HttpVersion)
 }
+
+//func main() {
+//	url := "https://http2---korlantas-approver-tlmp6dxpfq-et.a.run.app/test"
+//
+//	client := &http.Client{}
+//
+//	// Make a request with tracing
+//	req, err := http.NewRequest("GET", url, nil)
+//	if err != nil {
+//		fmt.Println("Error creating request:", err)
+//		return
+//	}
+//	var strart = time.Now()
+//	trace := &httptrace.ClientTrace{
+//		TLSHandshakeStart: func() {
+//			fmt.Println("TLS Handshake started at:", strart)
+//		},
+//		TLSHandshakeDone: func(cs tls.ConnectionState, err error) {
+//			fmt.Println("TLS Handshake done at:", time.Now())
+//			fmt.Println("TLS Handshake duration:", time.Since(strart))
+//		},
+//	}
+//
+//	req = req.WithContext(httptrace.WithClientTrace(req.Context(), trace))
+//
+//	// Perform the request
+//	resp, err := client.Do(req)
+//	if err != nil {
+//		fmt.Println("Error making request:", err)
+//		return
+//	}
+//	defer resp.Body.Close()
+//
+//	fmt.Println("Request completed with status:", resp.Status)
+//}
