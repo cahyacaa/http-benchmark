@@ -13,7 +13,6 @@ var (
 	avgConnect              []int64
 	avgDns, avgTlsHandShake []int64
 	avgTTFb                 []int64
-	l                       []int64
 )
 
 func getHttpTrace() *httptrace.ClientTrace {
@@ -60,17 +59,13 @@ func getHttpTrace() *httptrace.ClientTrace {
 		},
 		TLSHandshakeStart: func() {
 			tlsHandShakeStart = time.Now()
-			fmt.Println(tlsHandShakeStart)
-
-			l = append(l, int64(1))
 		},
 		TLSHandshakeDone: func(state tls.ConnectionState, err error) {
-			fmt.Println(state)
 			if err != nil {
 				log.Println("tls error", err)
 
 			} else {
-				fmt.Println(time.Since(tlsHandShakeStart))
+				fmt.Println("handshake happen")
 				avgTlsHandShake = append(avgTlsHandShake, tlsHandShakeEnd.Sub(tlsHandShakeStart).Microseconds())
 			}
 
@@ -100,7 +95,8 @@ func findAvg() {
 	for _, v := range avgGotConn {
 		gotConn += v
 	}
-	log.Println("avg got conn", float64(gotConn)/float64(len(avgGotConn)), len(avgGotConn))
+	log.Println("avg got conn", float64(gotConn)/float64(len(avgGotConn)))
+	log.Println("new tcp connection open count", len(avgGotConn))
 
 	for _, v := range avgConnect {
 		connect += v
@@ -115,7 +111,7 @@ func findAvg() {
 	for _, v := range avgTlsHandShake {
 		tlsHandshake += v
 	}
-	log.Println("avg tls handshake", float64(tlsHandshake)/float64(len(avgTlsHandShake)), len(l))
+	log.Println("avg tls handshake", float64(tlsHandshake)/float64(len(avgTlsHandShake)))
 
 	for _, v := range avgTTFb {
 		ttfb += v
