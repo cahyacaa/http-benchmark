@@ -72,10 +72,10 @@ func sendRequest(httpVersion int) RequestResult {
 
 	if httpVersion == 1 {
 		client = http1Client
-		testURL = "https://korlantas-approver-tlmp6dxpfq-et.a.run.app/test-5mb"
+		testURL = "https://http1---korlantas-approver-tlmp6dxpfq-et.a.run.app/test-1mb"
 	} else if httpVersion == 2 {
 		client = http2Client
-		testURL = "https://http2---korlantas-approver-tlmp6dxpfq-et.a.run.app/test"
+		testURL = "https://http2---korlantas-approver-tlmp6dxpfq-et.a.run.app/test-1mb"
 	}
 
 	// file sizes
