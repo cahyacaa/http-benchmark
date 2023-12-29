@@ -36,18 +36,6 @@ var http1Client = &http.Client{
 	},
 }
 
-var http2ClientV2 = &http.Client{
-	Timeout: time.Duration(TIMEOUT_SEC) * time.Second,
-	Transport: &http.Transport{
-		MaxIdleConns:        100,
-		MaxConnsPerHost:     100,
-		MaxIdleConnsPerHost: 100,
-
-		IdleConnTimeout: 90 * time.Second,
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: false, NextProtos: []string{"h2"}},
-	},
-}
-
 var http2Client = &http.Client{
 	Timeout: time.Duration(TIMEOUT_SEC) * time.Second,
 	Transport: &http2.Transport{
@@ -86,10 +74,8 @@ func sendRequest(httpVersion int) RequestResult {
 		client = http1Client
 		testURL = "https://korlantas-approver-tlmp6dxpfq-et.a.run.app/test-5mb"
 	} else if httpVersion == 2 {
-		client = http1Client
+		client = http2Client
 		testURL = "https://http2---korlantas-approver-tlmp6dxpfq-et.a.run.app/test"
-	} else {
-		client = http2ClientV2
 	}
 
 	// file sizes
