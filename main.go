@@ -62,38 +62,12 @@ type RequestResult struct {
 	RequestErr   error
 }
 
-func sendRequest(httpVersion int) RequestResult {
+func sendRequest(testURL string, client *http.Client) RequestResult {
 	start := time.Now()
 	var ttfb int64
 	var requestErr error
 	var responseSize int
-	var client *http.Client
-	var testURL string
 
-	if httpVersion == 1 {
-		client = http1Client
-		testURL = "https://http1---korlantas-approver-tlmp6dxpfq-et.a.run.app/test-1mb"
-	} else if httpVersion == 2 {
-		client = http2Client
-		testURL = "https://http2---korlantas-approver-tlmp6dxpfq-et.a.run.app/test-1mb"
-	}
-
-	// file sizes
-	// 1 = 64k
-	// 2 = 256K
-	// 3 = 1MB
-	// 4 = 5MB
-	// 5 = 10MB
-	// 6 = 20MB
-	// 7 = 48MB
-	//
-	// tweak the min/max file number to change the min/max response size
-	//min := 1
-	//max := 100 // exclusive
-	//fileNum := rand.Intn(max-min) + min
-	//testURL := "http://localhost:4000/test-5mb"
-	//testURL := "http://localhost:8000/test-5mb"
-	//testURL := "http://localhost:4000/test"
 	req, err := http.NewRequest("GET", testURL, nil)
 
 	if err != nil {
@@ -134,6 +108,8 @@ func benchmark(numRequests int, httpVersion int) {
 	var wg sync.WaitGroup
 	var mutex sync.Mutex
 	var failed int
+	var client *http.Client
+	var testURL string
 	//var results []RequestResult
 	//var ttfbList []float64
 	//start := time.Now()
@@ -141,13 +117,24 @@ func benchmark(numRequests int, httpVersion int) {
 	count := float32(0)
 	//numBytes := 0
 
+	if httpVersion == 1 {
+		client = http1Client
+		testURL = "https://http1---korlantas-approver-tlmp6dxpfq-et.a.run.app/test-1mb"
+	} else if httpVersion == 2 {
+		client = http2Client
+		testURL = "https://http2---korlantas-approver-tlmp6dxpfq-et.a.run.app/test-1mb"
+	}
+
+	fmt.Printf("Test will be executed on URL %s\n", testURL)
+	fmt.Printf("Protocol %v\n", httpVersion)
+
 	start := time.Now()
 	for i := 0; i < numRequests; i++ {
 		count++
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			res := sendRequest(httpVersion)
+			res := sendRequest(testURL, client)
 			if res.RequestErr != nil {
 				fmt.Println(res.RequestErr)
 			}
@@ -178,7 +165,7 @@ func benchmark(numRequests int, httpVersion int) {
 	}
 
 	wg.Wait()
-	fmt.Println(time.Since(start), failed)
+	fmt.Printf("Time to finish all request %v, and total failed request %v\n", time.Since(start), failed)
 	findAvg()
 	//fmt.Println(
 	//	"ttfb",
@@ -216,38 +203,3 @@ func main() {
 	opts := parseOptions()
 	benchmark(opts.NumRequests, opts.HttpVersion)
 }
-
-//func main() {
-//	url := "https://http2---korlantas-approver-tlmp6dxpfq-et.a.run.app/test"
-//
-//	client := &http.Client{}
-//
-//	// Make a request with tracing
-//	req, err := http.NewRequest("GET", url, nil)
-//	if err != nil {
-//		fmt.Println("Error creating request:", err)
-//		return
-//	}
-//	var strart = time.Now()
-//	trace := &httptrace.ClientTrace{
-//		TLSHandshakeStart: func() {
-//			fmt.Println("TLS Handshake started at:", strart)
-//		},
-//		TLSHandshakeDone: func(cs tls.ConnectionState, err error) {
-//			fmt.Println("TLS Handshake done at:", time.Now())
-//			fmt.Println("TLS Handshake duration:", time.Since(strart))
-//		},
-//	}
-//
-//	req = req.WithContext(httptrace.WithClientTrace(req.Context(), trace))
-//
-//	// Perform the request
-//	resp, err := client.Do(req)
-//	if err != nil {
-//		fmt.Println("Error making request:", err)
-//		return
-//	}
-//	defer resp.Body.Close()
-//
-//	fmt.Println("Request completed with status:", resp.Status)
-//}
