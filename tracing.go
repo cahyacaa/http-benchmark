@@ -2,7 +2,6 @@ package main
 
 import (
 	"crypto/tls"
-	"fmt"
 	"log"
 	"net/http/httptrace"
 	"time"
@@ -19,7 +18,7 @@ func getHttpTrace() *httptrace.ClientTrace {
 	var (
 		dnsStart, dnsEnd, connStart,
 		connEnd, connectStart, connectEnd,
-		tlsHandShakeStart, tlsHandShakeEnd time.Time
+		tlsHandShakeStart time.Time
 	)
 
 	trace := &httptrace.ClientTrace{
@@ -28,12 +27,12 @@ func getHttpTrace() *httptrace.ClientTrace {
 		},
 		GotConn: func(info httptrace.GotConnInfo) {
 			connEnd = time.Now()
-			if info.Reused {
-				log.Println("connection reused", info.WasIdle, info.IdleTime)
-			} else {
-				avgGotConn = append(avgGotConn, connEnd.Sub(connStart).Microseconds())
+			//if info.Reused {
+			//log.Println("connection reused", info.WasIdle, info.IdleTime)
+			//} else {
+			avgGotConn = append(avgGotConn, connEnd.Sub(connStart).Microseconds())
 
-			}
+			//}
 
 		},
 		ConnectStart: func(network, addr string) {
@@ -63,11 +62,9 @@ func getHttpTrace() *httptrace.ClientTrace {
 		TLSHandshakeDone: func(state tls.ConnectionState, err error) {
 			if err != nil {
 				log.Println("tls error", err)
-
 			} else {
-				tlsHandShakeEnd = time.Now()
-				fmt.Printf("handshake happen and time to finish %s\n", time.Since(tlsHandShakeStart))
-				avgTlsHandShake = append(avgTlsHandShake, tlsHandShakeEnd.Sub(tlsHandShakeStart).Microseconds())
+				//fmt.Printf("handshake happen and time to finish %s\n", time.Since(tlsHandShakeStart))
+				avgTlsHandShake = append(avgTlsHandShake, time.Since(tlsHandShakeStart).Microseconds())
 			}
 
 		},
@@ -75,7 +72,7 @@ func getHttpTrace() *httptrace.ClientTrace {
 			if err != nil {
 				log.Println("error at putIdleConn", err)
 			} else {
-				log.Println("put idle connection")
+				//log.Println("put idle connection")
 			}
 
 		},
