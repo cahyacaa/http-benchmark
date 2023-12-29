@@ -65,7 +65,8 @@ func getHttpTrace() *httptrace.ClientTrace {
 				log.Println("tls error", err)
 
 			} else {
-				fmt.Println("handshake happen")
+				tlsHandShakeEnd = time.Now()
+				fmt.Printf("handshake happen and time to finish %s\n", time.Since(tlsHandShakeStart))
 				avgTlsHandShake = append(avgTlsHandShake, tlsHandShakeEnd.Sub(tlsHandShakeStart).Microseconds())
 			}
 
