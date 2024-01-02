@@ -156,7 +156,7 @@ func benchmark(numRequests int, httpVersion int) {
 	finishTime := time.Since(start)
 	fmt.Printf("Time to finish all request %v, and total failed request %v\n", finishTime.Seconds(), failedReq)
 	fmt.Printf("Request success / s : %v\n", float64(numRequests-failedReq)/finishTime.Seconds())
-	fmt.Printf("Bandwidth : %v\n", float64(totalMB)/finishTime.Seconds())
+	fmt.Printf("Bandwidth : %v MB/s\n", float64(totalMB)/finishTime.Seconds())
 	findAvg()
 }
 
