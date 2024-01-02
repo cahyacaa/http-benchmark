@@ -27,9 +27,7 @@ func getHttpTrace() *httptrace.ClientTrace {
 		},
 		GotConn: func(info httptrace.GotConnInfo) {
 			connEnd = time.Now()
-			if info.Reused {
-				log.Println("connection reused", info.WasIdle, info.IdleTime)
-			} else {
+			if !info.Reused {
 				avgGotConn = append(avgGotConn, connEnd.Sub(connStart).Milliseconds())
 			}
 
