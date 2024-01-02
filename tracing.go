@@ -63,7 +63,6 @@ func getHttpTrace() *httptrace.ClientTrace {
 			if err != nil {
 				log.Println("tls error", err)
 			} else {
-				//fmt.Printf("handshake happen and time to finish %s\n", time.Since(tlsHandShakeStart))
 				avgTlsHandShake = append(avgTlsHandShake, time.Since(tlsHandShakeStart).Microseconds())
 			}
 
@@ -72,7 +71,6 @@ func getHttpTrace() *httptrace.ClientTrace {
 			if err != nil {
 				log.Println("error at putIdleConn", err)
 			} else {
-				//log.Println("put idle connection")
 			}
 
 		},

@@ -105,17 +105,16 @@ func sendRequest(testURL string, client *http.Client) RequestResult {
 }
 
 func benchmark(numRequests int, httpVersion int) {
-	var wg sync.WaitGroup
-	var mutex sync.Mutex
-	var failed int
-	var client *http.Client
-	var testURL string
-	//var results []RequestResult
-	//var ttfbList []float64
-	//start := time.Now()
+	var (
+		wg        sync.WaitGroup
+		mutex     sync.Mutex
+		failedReq int
+		client    *http.Client
+		testURL   string
+		totalMB   float32
+	)
 
-	count := float32(0)
-	//numBytes := 0
+	count := 0
 
 	if httpVersion == 1 {
 		client = http1Client
@@ -140,41 +139,23 @@ func benchmark(numRequests int, httpVersion int) {
 			}
 
 			if res.Status != "200 OK" {
-				fmt.Println(res.Status)
 				mutex.Lock()
-				failed++
+				numBytes := 0
+				numBytes += res.ResponseSize
+				totalMB += float32(numBytes) / float32(1048576)
+				failedReq++
 				mutex.Unlock()
 			}
-			//
-			//results = append(results, result)
-			//ttfbList = append(ttfbList, float64(result.TTFB))
 
-			//progress := float64(count) / float64(numRequests) * 100.0
-			//numBytes += result.ResponseSize
-			//numMB := float32(numBytes) / float32(1048576)
-			//
-			//durationSec := int(time.Since(start).Seconds())
-			//reqPerSec := float32(0)
-			//bandwidth := float32(0)
-			//if durationSec > 0 {
-			//	bandwidth = numMB / float32(time.Since(start).Seconds())
-			//	reqPerSec = count / float32(durationSec)
-			//}
-			//fmt.Printf("%.2f, %.2f%%, %.2f r/s, %.2f mb/s, protocol: %d ,%+v\n", count, progress, reqPerSec, bandwidth, httpVersion, result)
 		}()
 	}
 
 	wg.Wait()
-	fmt.Printf("Time to finish all request %v, and total failed request %v\n", time.Since(start), failed)
+	finishTime := time.Since(start)
+	fmt.Printf("Time to finish all request %v, and total failed request %v\n", finishTime.Seconds(), failedReq)
+	fmt.Printf("Request success / s : %v\n", float64(numRequests-failedReq)/finishTime.Seconds())
+	fmt.Printf("Bandwidth : %v\n", float64(totalMB)/finishTime.Seconds())
 	findAvg()
-	//fmt.Println(
-	//	"ttfb",
-	//	calcPercentile(ttfbList, 50),
-	//	calcPercentile(ttfbList, 90),
-	//	calcPercentile(ttfbList, 95),
-	//	calcPercentile(ttfbList, 99),
-	//	time.Since(start),
-	//)
 }
 
 func calcPercentile(values []float64, percent float64) float64 {
