@@ -140,9 +140,11 @@ func benchmark(numRequests int, httpVersion int) {
 
 			if res.Status != "200 OK" {
 				mutex.Lock()
-
-				totalMB += float32(res.ResponseSize) / float32(1048576)
 				failedReq++
+				mutex.Unlock()
+			} else {
+				mutex.Lock()
+				totalMB += float32(res.ResponseSize) / float32(1048576)
 				mutex.Unlock()
 			}
 
