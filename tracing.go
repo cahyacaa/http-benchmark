@@ -27,12 +27,11 @@ func getHttpTrace() *httptrace.ClientTrace {
 		},
 		GotConn: func(info httptrace.GotConnInfo) {
 			connEnd = time.Now()
-			//if info.Reused {
-			//log.Println("connection reused", info.WasIdle, info.IdleTime)
-			//} else {
-			avgGotConn = append(avgGotConn, connEnd.Sub(connStart).Microseconds())
-
-			//}
+			if info.Reused {
+				log.Println("connection reused", info.WasIdle, info.IdleTime)
+			} else {
+				avgGotConn = append(avgGotConn, connEnd.Sub(connStart).Milliseconds())
+			}
 
 		},
 		ConnectStart: func(network, addr string) {
@@ -45,7 +44,7 @@ func getHttpTrace() *httptrace.ClientTrace {
 				log.Println("error at ConnectDone", err)
 
 			} else {
-				avgConnect = append(avgConnect, connectEnd.Sub(connectStart).Microseconds())
+				avgConnect = append(avgConnect, connectEnd.Sub(connectStart).Milliseconds())
 			}
 		},
 		DNSStart: func(info httptrace.DNSStartInfo) {
@@ -53,7 +52,7 @@ func getHttpTrace() *httptrace.ClientTrace {
 		},
 		DNSDone: func(info httptrace.DNSDoneInfo) {
 			dnsEnd = time.Now()
-			avgDns = append(avgDns, dnsEnd.Sub(dnsStart).Microseconds())
+			avgDns = append(avgDns, dnsEnd.Sub(dnsStart).Milliseconds())
 
 		},
 		TLSHandshakeStart: func() {
@@ -63,7 +62,7 @@ func getHttpTrace() *httptrace.ClientTrace {
 			if err != nil {
 				log.Println("tls error", err)
 			} else {
-				avgTlsHandShake = append(avgTlsHandShake, time.Since(tlsHandShakeStart).Microseconds())
+				avgTlsHandShake = append(avgTlsHandShake, time.Since(tlsHandShakeStart).Milliseconds())
 			}
 
 		},
