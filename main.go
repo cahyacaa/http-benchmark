@@ -152,6 +152,7 @@ func benchmark(numRequests int, httpVersion int) {
 	}
 
 	wg.Wait()
+	fmt.Println(totalMB)
 	finishTime := time.Since(start)
 	fmt.Printf("Time to finish all request %v, and total failed request %v\n", finishTime.Seconds(), failedReq)
 	fmt.Printf("Request success / s : %v\n", float64(numRequests-failedReq)/finishTime.Seconds())
