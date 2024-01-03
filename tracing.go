@@ -88,26 +88,26 @@ func findAvg() {
 	for _, v := range avgGotConn {
 		gotConn += v
 	}
-	log.Println("avg got conn", float64(gotConn)/float64(len(avgGotConn)))
+	log.Println("avg got conn", float64(gotConn)/float64(len(avgGotConn)), " ms")
 	log.Println("new tcp connection open count", len(avgGotConn))
 
 	for _, v := range avgConnect {
 		connect += v
 	}
-	log.Println("avg got connect", float64(connect)/float64(len(avgConnect)))
+	log.Println("avg got connect", float64(connect)/float64(len(avgConnect)), " ms")
 
 	for _, v := range avgDns {
 		dns += v
 	}
-	log.Println("avg dns", float64(dns)/float64(len(avgDns)))
+	log.Println("avg dns", float64(dns)/float64(len(avgDns)), " ms")
 
 	for _, v := range avgTlsHandShake {
 		tlsHandshake += v
 	}
-	log.Println("avg tls handshake", float64(tlsHandshake)/float64(len(avgTlsHandShake)))
+	log.Println("avg tls handshake", float64(tlsHandshake)/float64(len(avgTlsHandShake)), " ms")
 
 	for _, v := range avgTTFb {
 		ttfb += v
 	}
-	log.Println("avg ttfb", float64(ttfb)/float64(len(avgTTFb)))
+	log.Println("avg ttfb", float64(ttfb)/float64(len(avgTTFb)), " ms")
 }
