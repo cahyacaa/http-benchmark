@@ -23,6 +23,7 @@ const (
 type Options struct {
 	NumRequests int
 	HttpVersion int
+	IsServer    bool
 }
 
 var http1Client = &http.Client{
@@ -166,15 +167,20 @@ func calcPercentile(values []float64, percent float64) float64 {
 }
 
 func parseOptions() *Options {
-	var numLogs, httpVersion int
+	var (
+		server               bool
+		numLogs, httpVersion int
+	)
 
 	flag.IntVar(&numLogs, "c", 300, "number of requests")
 	flag.IntVar(&httpVersion, "http", 1, "HTTP version to use")
+	flag.BoolVar(&server, "server", false, "Test Http server or client")
 	flag.Parse()
 
 	return &Options{
 		NumRequests: numLogs,
 		HttpVersion: httpVersion,
+		IsServer:    server,
 	}
 }
 
@@ -184,5 +190,11 @@ func main() {
 	rand.NewSource(time.Now().UnixNano())
 
 	opts := parseOptions()
-	benchmark(opts.NumRequests, opts.HttpVersion)
+
+	if opts.IsServer {
+		RunServer()
+	} else {
+		benchmark(opts.NumRequests, opts.HttpVersion)
+	}
+
 }
